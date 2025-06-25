@@ -149,11 +149,13 @@ app.delete('users/delete-image', authenticateToken, async(req,res)=>[
 
 ])
 
+
+
 // Testing connection to S3
-grabBucket()
+//grabBucket()
 
 // Start Server
-const PORT = process.env.PORT
+const PORT = process.env.PORT || 3000
 app.listen(PORT, ()=> 
     console.log(`Server listening on port ${PORT}`)
 );
