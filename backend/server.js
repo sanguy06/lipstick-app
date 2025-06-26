@@ -149,7 +149,10 @@ app.delete('users/delete-image', authenticateToken, async(req,res)=>[
 
 ])
 
-
+app.post('/product-info', async(req,res)=>{
+    const {image_uri, product, brand} = req.body
+    res.json({image_uri, product, brand})
+})
 
 // Testing connection to S3
 //grabBucket()

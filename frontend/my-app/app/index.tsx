@@ -5,9 +5,7 @@ import {useRouter} from 'expo-router';
 export default function Index() {
   const router = useRouter()
   return (
-    <View
-      style={styles.container}
-    >
+    <View style={styles.container}>
       <Text style={styles.text}>Welcome</Text>
       <Text style={styles.text}>to</Text>
       <Text style={styles.text}>Lipify!</Text>
