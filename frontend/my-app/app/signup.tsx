@@ -18,7 +18,7 @@ export default function Signup () {
     })
 
     function setUserInfo(name: string, password: string) {
-        axios.post("http://10.0.2.2:4000/users/signup", 
+        axios.post("http://192.168.1.21:4000/users/signup", 
             {
             user_name: name, 
             passcode: password

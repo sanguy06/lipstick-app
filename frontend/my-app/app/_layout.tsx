@@ -2,9 +2,13 @@ import { Stack } from "expo-router";
 import {useFonts} from 'expo-font';
 import {useEffect} from "react";
 import * as SplashScreen from 'expo-splash-screen'; 
-
+import { LogBox } from 'react-native';
 export default function RootLayout() {
   // Load in Font
+  LogBox.ignoreLogs([
+  '"shadow*" style props are deprecated',
+  'props.pointerEvents is deprecated'
+]);
   const [loaded, error] = useFonts({
         'CuteDino': require('../assets/fonts/CuteDino.otf')
     })

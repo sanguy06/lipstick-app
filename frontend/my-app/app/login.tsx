@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, Button, TextInput} from "react-native";
 import {useState} from "react"; 
 import axios from "axios";
 import {useRouter} from 'expo-router';
+
 export default function Login() {
     const router = useRouter(); 
     const [name, setName] = useState("")
@@ -19,7 +20,7 @@ export default function Login() {
       
         console.log(name)
         console.log(password)
-        axios.post("http://10.0.2.2:4000/users/login", 
+        axios.post("http://192.168.1.21:4000/users/login", 
             {
             user_name: name, 
             passcode: password
@@ -27,7 +28,7 @@ export default function Login() {
         .then( (res)=> {
             if(res.data !== "Not allowed")
             {
-                router.navigate('/takePhoto')
+                router.navigate('/productimage')
             } else {
                 router.navigate('/failedlogin')
             }

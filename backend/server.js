@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import cors from "cors";
 import {s3Client} from "./config/connectToS3.js"
+import { spawn } from "child_process";
 import { 
     paginateListBuckets,
     PutObjectCommand,
@@ -149,9 +150,24 @@ app.delete('users/delete-image', authenticateToken, async(req,res)=>[
 
 ])
 
+app.post('/load-image', async(req,res)=>{
+    const{user_img, product_img} = req.body
+    console.log("user img: " + user_img)
+    console.log("product img: " + product_img)
+})
 app.post('/product-info', async(req,res)=>{
-    const {image_uri, product, brand} = req.body
-    res.json({image_uri, product, brand})
+    let scriptOutput = ''
+    const {image_uri, product, brand, shade} = req.body
+    const pythonProcess = spawn('python', ['applyEffect.py', 
+        image_uri, brand, product, shade])
+    pythonProcess.stdout.on('data', (data)=> {
+        console.log(`stdout: ${data}`);
+    })
+    res.json("data")
+    const pyProcess = spawn('python', ['applyFilter.py', image_uri])
+    pyProcess.stdout.on('data', (data)=>{
+        console.log(`stdout2: ${data}`);
+    })
 })
 
 // Testing connection to S3
@@ -159,7 +175,7 @@ app.post('/product-info', async(req,res)=>{
 
 // Start Server
 const PORT = process.env.PORT || 3000
-app.listen(PORT, ()=> 
+app.listen(PORT, '0.0.0.0', ()=> 
     console.log(`Server listening on port ${PORT}`)
 );
 

@@ -1,5 +1,9 @@
 import { Text, View, StyleSheet, Button} from "react-native";
 import {useRouter} from 'expo-router';
+import { LogBox } from 'react-native';
+
+LogBox.ignoreLogs([]); // reset ignored logs
+LogBox.ignoreAllLogs(false); // show all warnings
 
 // Acts As Welcome Screen
 export default function Index() {

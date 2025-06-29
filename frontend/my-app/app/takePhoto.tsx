@@ -2,7 +2,7 @@ import { View, Text, Button, Modal, StyleSheet, TouchableOpacity, Image } from "
 import { CameraView, CameraType, useCameraPermissions } from "expo-camera";
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { useRef, useState, useEffect } from 'react';
-import { useRouter } from "expo-router"
+import { useRouter, useLocalSearchParams } from "expo-router"
 import * as MediaLibrary from 'expo-media-library'
 
 export default function TakePhoto() {
@@ -11,10 +11,13 @@ export default function TakePhoto() {
     const [photo, setPhoto] = useState<any>(null);
     const cameraRef = useRef<CameraView | null>(null);
     const router = useRouter();
+    const productImage = useLocalSearchParams()
 
+    
     useEffect(()=>{
       (async()=>{
         MediaLibrary.requestPermissionsAsync();
+        console.log("at takephoto " + productImage.productImage)
       })();
     }, [])
     
@@ -78,7 +81,7 @@ export default function TakePhoto() {
                   </TouchableOpacity>
                   <TouchableOpacity style={styles.button} >
                     <Ionicons name='arrow-forward-outline' title ='Save' size={44} color='white' 
-                      onPress={()=>{router.push({pathname: '/productinfo', params:{image_uri: photo.uri}})}}/>
+                      onPress={()=>{router.push({pathname: '/loadImage', params:{user_img: photo.uri, product_img: productImage.productImage}})}}/>
                   </TouchableOpacity>
                   
               </View>
