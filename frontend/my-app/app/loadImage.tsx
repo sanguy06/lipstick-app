@@ -1,22 +1,127 @@
 import { View, Text} from "react-native"
-import { useEffect } from "react"
+import { useState, useEffect } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
+import https from "node:https"
+import AsyncStorage from "@react-native-async-storage/async-storage"
+import config from './config'
 import axios from "axios"
 export default function LoadImage() {
-    const {user_img, product_img} = useLocalSearchParams()
-   
-    console.log("user image is" + user_img)
-    console.log("product image is " + product_img)
-    function sendImageData () {
 
-        axios.post("http://192.168.1.21:4000/load-image", {
-            user_img: user_img, 
-            product_img: product_img
-        })
-    }
+    const host = config.HOST
+
+    // Get off of router 
+    const {user_img, product_img} = useLocalSearchParams()
+
+    // Img URI can be string or array -> make it a single string 
+    const userImgUri = getSingleParam(user_img)
+    const prodImgUri = getSingleParam(product_img)
+
+    // Get Image Type -> will be sent as mimetype in GET URL request
+    const user_img_type = userImgUri?.split('.').pop()?.toLowerCase()
+    const product_img_type = prodImgUri?.split('.').pop()?.toLowerCase()
+    
     useEffect(()=>{
-        sendImageData()
+        getPresignedURL()
     }, [])
+
+    function getSingleParam(param: string | string[] | undefined): string | undefined {
+        if (Array.isArray(param)) return param[0];
+        return param;
+    }
+    
+    // Upload to S3
+    async function getPresignedURL () {
+
+        let userPresigned = ""
+        let productPresigned = ""
+        const accessToken = await AsyncStorage.getItem('accessToken'); 
+       try {
+        // Get Presigned URL for User Image
+        axios.get(`${host}/users/create-put-url`, {
+            headers:{
+                Authorization: `Bearer ${accessToken}`
+            }, 
+            params: {image_uri: user_img, mimetype: user_img_type}
+        })         
+        .then((res)=>{
+            userPresigned = res.data
+            console.log("User Presigned: " + userPresigned)
+        })
+
+        // Get Presigned URL for Product Image
+         axios.get(`${host}/users/create-put-url`, {
+            headers:{
+                Authorization: `Bearer ${accessToken}`
+            }, 
+            params: {image_uri: product_img, mimetype: product_img_type}
+        })         
+        .then((res)=>{
+            productPresigned = res.data
+            console.log("User Presigned: " + productPresigned)
+        })
+
+    } catch (err) {
+        console.log(err)
+    }
+        
+        // Fetch Binary Data 
+        let user_uri = null
+        let product_uri = null
+        let user_blob = null
+        let product_blob = null
+
+        if(userImgUri){
+            user_uri = await fetch(userImgUri);
+            user_blob = await user_uri.blob()
+        }
+        if(prodImgUri)
+        {
+            product_uri = await fetch(prodImgUri)
+            product_blob = await product_uri.blob()
+        }
+
+        console.log("User blob: " + user_blob)
+        console.log("Prod blob: " + product_blob)
+        
+        // Use Pre-Signed URL to Upload to S3
+        try {
+            await fetch(userPresigned, {
+                method: 'PUT', 
+                headers: {
+                    'Content-Type': `image/${user_img_type}`
+                }, 
+                body: user_blob
+            })
+
+            await fetch(productPresigned, {
+                method: 'PUT', 
+                headers: {
+                    'Content-Type': `image/${product_img_type}`
+                }, 
+                body: product_blob
+            })
+            console.log("Something should have happened")
+        } catch(err) {
+            console.log(err)
+        }
+        try {
+            axios.post(`${host}/users/load-image`, {
+                user_img: userImgUri, 
+                product_img: prodImgUri, 
+                token: accessToken
+            }, {        
+                headers:{
+                    Authorization: `Bearer ${accessToken}`
+                },    
+            })
+        } catch(err){
+            console.log(err)
+        }
+
+    }
+   
+
+
     return(
         <View>
             <Text>Loading Image</Text>

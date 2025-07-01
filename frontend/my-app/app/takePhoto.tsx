@@ -5,6 +5,7 @@ import { useRef, useState, useEffect } from 'react';
 import { useRouter, useLocalSearchParams } from "expo-router"
 import * as MediaLibrary from 'expo-media-library'
 
+
 export default function TakePhoto() {
     const [facing, setFacing] = useState<CameraType>('back');
     const [perm, requestPerm] = useCameraPermissions(); 
@@ -127,11 +128,7 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     padding: 35,
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    }},
+    },
      modalText: {
     marginBottom: 15,
     textAlign: 'center',

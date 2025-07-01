@@ -1,9 +1,14 @@
-import { Text, View, StyleSheet, Button, TextInput} from "react-native";
+import { Text, View, StyleSheet, Button, TextInput } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage"
 import {useState} from "react"; 
 import axios from "axios";
 import {useRouter} from 'expo-router';
 
+import config from './config'
+
 export default function Login() {
+
+    const host = config.HOST
     const router = useRouter(); 
     const [name, setName] = useState("")
     const [password, setPassword] = useState("")
@@ -20,14 +25,17 @@ export default function Login() {
       
         console.log(name)
         console.log(password)
-        axios.post("http://192.168.1.21:4000/users/login", 
+        axios.post(`${host}/users/login`, 
             {
             user_name: name, 
             passcode: password
             })
-        .then( (res)=> {
+        .then( async (res)=> {
             if(res.data !== "Not allowed")
             {
+                console.log("token is " + res.data.accessToken)
+
+                await AsyncStorage.setItem('accessToken', res.data.accessToken);
                 router.navigate('/productimage')
             } else {
                 router.navigate('/failedlogin')

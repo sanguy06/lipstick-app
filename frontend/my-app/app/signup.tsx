@@ -3,7 +3,11 @@ import {useState} from "react";
 import axios from "axios";
 import {useRouter} from "expo-router"
 
+import config from './config'
+
 export default function Signup () {
+    
+    const host = config.HOST
     const router = useRouter()
     const[name, setName] = useState("")
     const[password, setPassword] = useState("")
@@ -18,7 +22,7 @@ export default function Signup () {
     })
 
     function setUserInfo(name: string, password: string) {
-        axios.post("http://192.168.1.21:4000/users/signup", 
+        axios.post(`${host}/users/signup`, 
             {
             user_name: name, 
             passcode: password

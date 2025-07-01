@@ -16,7 +16,6 @@ import {
 
 import {
   getSignedUrl,
-  S3RequestPresigner,
 } from "@aws-sdk/s3-request-presigner";
 
 
@@ -112,22 +111,28 @@ const grabBucket = async() => {
         
 } 
 
-// Create Presigned URL - PUT request
+// Create S3 Presigned URL - PUT request
 app.get('/users/create-put-url', authenticateToken, async(req,res) => {
     const user_id = req.user.user_id
-    const {image_url} = req.body
-    const key = `${user_id}/photos/${image_url}`
-    const command = new PutObjectCommand({Bucket: process.env.AWS_BUCKET_NAME, Key: key});
+    const {image_uri, mimetype} = req.query
+    const key = `${user_id}/photos/${image_uri}`
+    const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME, 
+        Key: key, 
+        ContentType: mimetype});
     const signedUrl = await getSignedUrl(s3Client, command, {expiresIn: 3600})
     res.send(signedUrl)
 })
 
-// Create Presigned URL - GET request
+// Create S3 Presigned URL - GET request
 app.get('/users/create-get-url', authenticateToken, async(req,res) => {
     const user_id = req.user.user_id
-    const {image_url} = req.body
+    const {image_url} = req.query
     const key = `${user_id}/photos/${image_url}`
-    const command = new GetObjectCommand({Bucket: process.env.AWS_BUCKET_NAME, Key: key});
+    const command = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME, 
+        Key: key
+        });
     const signedUrl = await getSignedUrl(s3Client, command, {expiresIn: 3600})
     res.send(signedUrl)
 })
@@ -150,10 +155,16 @@ app.delete('users/delete-image', authenticateToken, async(req,res)=>[
 
 ])
 
-app.post('/load-image', async(req,res)=>{
-    const{user_img, product_img} = req.body
-    console.log("user img: " + user_img)
-    console.log("product img: " + product_img)
+app.post('/users/load-image', authenticateToken, async(req,res)=>{
+    const accessToken = req.headers['authorization']
+    const user_id = req.user.user_id
+    const{user_img, product_img} = req.body  
+    const pythonProcess = spawn('python', ['applyFilter.py', 
+        user_id, user_img, product_img, accessToken])
+    pythonProcess.stdout.on('data', (data)=> {
+        console.log(`stdout: ${data}`);
+    })
+    res.send("yo")
 })
 app.post('/product-info', async(req,res)=>{
     let scriptOutput = ''

@@ -38,7 +38,7 @@ export default function ProductImage() {
                 <Ionicons 
                     name="arrow-forward-outline" 
                     size={44} 
-                    onPress={()=>{router.push({pathname: '/takePhoto', params:{productImage: JSON.stringify(productImage)}})}}
+                    onPress={()=>{router.push({pathname: '/takePhoto', params:{productImage: productImage}})}}
                 >
                 </Ionicons>
             </TouchableOpacity>
@@ -69,7 +69,6 @@ export default function ProductImage() {
             width: "70%", 
             height: "40%", 
             borderColor: 'gray', 
-            shadowColor: '#000', 
             borderWidth: 5
         },
         button_container: {
