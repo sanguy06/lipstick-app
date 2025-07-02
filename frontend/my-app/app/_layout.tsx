@@ -6,8 +6,8 @@ import { LogBox } from 'react-native';
 export default function RootLayout() {
   // Load in Font
   LogBox.ignoreLogs([
-  '"shadow*" style props are deprecated',
-  'props.pointerEvents is deprecated'
+   /shadow.*/i,
+  /pointerEvents/i,
 ]);
   const [loaded, error] = useFonts({
         'CuteDino': require('../assets/fonts/CuteDino.otf')

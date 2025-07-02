@@ -57,7 +57,7 @@ export default function LoadImage() {
         })         
         .then((res)=>{
             productPresigned = res.data
-            console.log("User Presigned: " + productPresigned)
+            console.log("Product Presigned: " + productPresigned)
         })
 
     } catch (err) {
@@ -80,9 +80,7 @@ export default function LoadImage() {
             product_blob = await product_uri.blob()
         }
 
-        console.log("User blob: " + user_blob)
-        console.log("Prod blob: " + product_blob)
-        
+     
         // Use Pre-Signed URL to Upload to S3
         try {
             await fetch(userPresigned, {
@@ -107,8 +105,7 @@ export default function LoadImage() {
         try {
             axios.post(`${host}/users/load-image`, {
                 user_img: userImgUri, 
-                product_img: prodImgUri, 
-                token: accessToken
+                product_img: prodImgUri
             }, {        
                 headers:{
                     Authorization: `Bearer ${accessToken}`

@@ -156,6 +156,7 @@ app.delete('users/delete-image', authenticateToken, async(req,res)=>[
 ])
 
 app.post('/users/load-image', authenticateToken, async(req,res)=>{
+    console.log("Reached server: loading image")
     const accessToken = req.headers['authorization']
     const user_id = req.user.user_id
     const{user_img, product_img} = req.body  
@@ -165,6 +166,16 @@ app.post('/users/load-image', authenticateToken, async(req,res)=>{
         console.log(`stdout: ${data}`);
     })
     res.send("yo")
+})
+
+app.post('/test', async(req,res)=>
+{
+    console.log("running")
+    const process = spawn('python', ['test.py'])
+    process.stdout.on('data', (data) =>{
+        console.log(`stdout: ${data}`)
+    } )
+    res.send("hi")
 })
 app.post('/product-info', async(req,res)=>{
     let scriptOutput = ''

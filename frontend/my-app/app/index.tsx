@@ -1,10 +1,11 @@
-import { Text, View, StyleSheet, Button} from "react-native";
+import { Text, View, StyleSheet, Button, LogBox} from "react-native";
 import {useRouter} from 'expo-router';
-import { LogBox } from 'react-native';
 
-LogBox.ignoreLogs([]); // reset ignored logs
-LogBox.ignoreAllLogs(false); // show all warnings
 
+  LogBox.ignoreLogs([
+   /shadow.*/i,
+  /pointerEvents/i,
+]);
 // Acts As Welcome Screen
 export default function Index() {
   const router = useRouter()
