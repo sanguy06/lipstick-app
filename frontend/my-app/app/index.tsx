@@ -1,7 +1,6 @@
 import { Text, View, StyleSheet, Button, LogBox} from "react-native";
 import {useRouter} from 'expo-router';
 
-
   LogBox.ignoreLogs([
    /shadow.*/i,
   /pointerEvents/i,

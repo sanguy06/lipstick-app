@@ -27,16 +27,20 @@ def openUserImage():
             )       
         res = requests.get(presignedURL.text) 
         print(res.status_code)  
+        # convert to bytes data 
         img_data = BytesIO(res.content)
         '''
+        # convert to np array
         img_bytes = np.asarray(bytearray(img_data.read()), dtype=np.uint8)
+
+        # decode with cv2 now usable by cv2 library
         img_cv2 = cv2.imdecode(img_bytes, cv2.IMREAD_COLOR)
         print(img_cv2.shape)
-        '''
+        
         img = Image.open(img_data)
         img.show() 
+        '''
         
-
     except exception as e:     
         print(f"Error: {e}")
     
@@ -69,7 +73,8 @@ def openProdImage():
         print(f"Time: {end-start: .2f} seconds")
 
         # Use Output to Find Median Color
-
+        
+        
 
 
         '''
