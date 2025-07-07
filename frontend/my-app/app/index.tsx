@@ -1,12 +1,13 @@
 import { Text, View, StyleSheet, Button, LogBox} from "react-native";
 import {useRouter} from 'expo-router';
 
+  
+// Acts As Welcome Screen
+export default function Index() {
   LogBox.ignoreLogs([
    /shadow.*/i,
   /pointerEvents/i,
 ]);
-// Acts As Welcome Screen
-export default function Index() {
   const router = useRouter()
   return (
     <View style={styles.container}>

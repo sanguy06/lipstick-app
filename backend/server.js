@@ -178,6 +178,7 @@ app.post('/test', async(req,res)=>
     res.send("hi")
 })
 app.post('/product-info', async(req,res)=>{
+
     let scriptOutput = ''
     const {image_uri, product, brand, shade} = req.body
     const pythonProcess = spawn('python', ['applyEffect.py', 

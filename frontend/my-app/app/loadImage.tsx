@@ -37,7 +37,7 @@ export default function LoadImage() {
         const accessToken = await AsyncStorage.getItem('accessToken'); 
        try {
         // Get Presigned URL for User Image
-        axios.get(`${host}/users/create-put-url`, {
+        await axios.get(`${host}/users/create-put-url`, {
             headers:{
                 Authorization: `Bearer ${accessToken}`
             }, 
@@ -49,7 +49,7 @@ export default function LoadImage() {
         })
 
         // Get Presigned URL for Product Image
-         axios.get(`${host}/users/create-put-url`, {
+         await axios.get(`${host}/users/create-put-url`, {
             headers:{
                 Authorization: `Bearer ${accessToken}`
             }, 
@@ -79,7 +79,6 @@ export default function LoadImage() {
             product_uri = await fetch(prodImgUri)
             product_blob = await product_uri.blob()
         }
-
      
         // Use Pre-Signed URL to Upload to S3
         try {
