@@ -124,6 +124,29 @@ app.get('/users/create-put-url', authenticateToken, async(req,res) => {
     res.send(signedUrl)
 })
 
+app.get('/users/upload-processed-image', authenticateToken, async(req,res) => {
+    const user_id = req.user.user_id
+    const {image_id, mimetype} = req.query
+    const key = `${user_id}/photos/${image_id}`
+    const command = new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME, 
+        Key: key, 
+        ContentType: mimetype});
+    const signedUrl = await getSignedUrl(s3Client, command, {expiresIn: 3600})
+    res.send(signedUrl)
+})
+
+app.get('/users/get-processed-image', authenticateToken, async(req,res)=>{
+    const user_id = req.user.user_id
+    const {image_id} = req.query
+    const key = `${user_id}/photos/${image_id}`
+    const command = new GetObjectCommand({
+        Bucket: process.env.AWS_BUCKET_NAME, 
+        Key: key, 
+        });
+    const signedUrl = await getSignedUrl(s3Client, command, {expiresIn: 3600})
+    res.send(signedUrl)
+})
 // Create S3 Presigned URL - GET request
 app.get('/users/create-get-url', authenticateToken, async(req,res) => {
     const user_id = req.user.user_id
@@ -137,17 +160,33 @@ app.get('/users/create-get-url', authenticateToken, async(req,res) => {
     res.send(signedUrl)
 })
 
+// Get Most Recent Image from User to DB
+app.get('/users/get-image', authenticateToken, async(req,res)=>{
+    const user_id = req.user.user_id
+    const image_id = await pool.query(`SELECT * FROM images WHERE 
+        user_id = $1 ORDER BY uploaded_at DESC LIMIT 1`, [user_id]); 
+    res.send(image_id[0])
+})
 
 // Add Image to DB
 app.post('/users/add-image', authenticateToken, async (req,res) => {
-   
     const user_id = req.user.user_id
     const {image_url} = req.body
     await pool.query(`INSERT INTO images (user_id, image_url) VALUES ($1, $2)`, 
         [user_id, image_url]
     )
     res.json({user_id, image_url})
-    
+})
+
+
+app.post('/users/add-processed-image', authenticateToken, async (req,res) => {
+    const user_id = req.user.user_id
+    const {image_id} = req.body
+    const s3_key = `${user_id}/photos/${image_id}`
+    await pool.query(`INSERT INTO images (user_id, image_id, s3_key) VALUES ($1, $2, $3)`, 
+        [user_id, image_id, s3_key]
+    )
+    res.json({user_id, image_id, s3_key})
 })
 
 // Delete Image from DB
@@ -158,15 +197,30 @@ app.delete('users/delete-image', authenticateToken, async(req,res)=>[
 app.post('/users/load-image', authenticateToken, async(req,res)=>{
     console.log("Reached server: loading image")
     const accessToken = req.headers['authorization']
+    
     const user_id = req.user.user_id
     const{user_img, product_img} = req.body  
-    const pythonProcess = spawn('python', ['applyFilter.py', 
-        user_id, user_img, product_img, accessToken])
-    pythonProcess.stdout.on('data', (data)=> {
-        console.log(`stdout: ${data}`);
-    })
+    const pythonPath = process.env.PYTHON_PATH;
+
+    try {
+        
+        const pythonProcess = spawn(pythonPath, ['applyFilter.py', 
+            user_id, user_img, product_img, accessToken])
+        pythonProcess.stderr.on('data', (data) => {
+            console.error(`stderr: ${data}`);
+        });
+        pythonProcess.stdout.on('data', (data)=> {
+            console.error(`stderr: ${data}`);
+            console.log(`stdout: ${data}`);
+        })
+       
+    } catch (err) {
+        console.log(err)
+    }
     res.send("yo")
 })
+
+
 
 app.post('/test', async(req,res)=>
 {
@@ -177,24 +231,6 @@ app.post('/test', async(req,res)=>
     } )
     res.send("hi")
 })
-app.post('/product-info', async(req,res)=>{
-
-    let scriptOutput = ''
-    const {image_uri, product, brand, shade} = req.body
-    const pythonProcess = spawn('python', ['applyEffect.py', 
-        image_uri, brand, product, shade])
-    pythonProcess.stdout.on('data', (data)=> {
-        console.log(`stdout: ${data}`);
-    })
-    res.json("data")
-    const pyProcess = spawn('python', ['applyFilter.py', image_uri])
-    pyProcess.stdout.on('data', (data)=>{
-        console.log(`stdout2: ${data}`);
-    })
-})
-
-// Testing connection to S3
-//grabBucket()
 
 // Start Server
 const PORT = process.env.PORT || 3000

@@ -8,8 +8,6 @@ import axios from "axios"
 export default function LoadImage() {
 
     const host = config.HOST
-
-    // Get off of router 
     const {user_img, product_img} = useLocalSearchParams()
 
     // Img URI can be string or array -> make it a single string 
@@ -63,7 +61,6 @@ export default function LoadImage() {
     } catch (err) {
         console.log(err)
     }
-        
         // Fetch Binary Data 
         let user_uri = null
         let product_uri = null
@@ -102,7 +99,7 @@ export default function LoadImage() {
             console.log(err)
         }
         try {
-            axios.post(`${host}/users/load-image`, {
+            await axios.post(`${host}/users/load-image`, {
                 user_img: userImgUri, 
                 product_img: prodImgUri
             }, {        
@@ -113,11 +110,35 @@ export default function LoadImage() {
         } catch(err){
             console.log(err)
         }
+        try {
+            /**
+             * Needs to get most recent image id from postgres
+             * Request presigned URL from backend with the image id
+             * use presigned URL
+             */
+            let presignedURL = ""
+            const image_id = await axios.get(`${host}/users/get-image`,  {
+            headers:{
+                Authorization: `Bearer ${accessToken}`
+            }})
+            await axios.get(`${host}/users/get-processed-image`, {
+                headers:{
+                    Authorization: `Bearer ${accessToken}`
+                }, 
+                params: {image_id: image_id}
+            }) 
+            .then((res)=>{
+                presignedURL = res.data
+                console.log(presignedURL)
+            })
+            const res = await fetch(presignedURL)
+            console.log(res)
 
+        } catch (err) {
+            console.log(err)
+        }
     }
    
-
-
     return(
         <View>
             <Text>Loading Image</Text>

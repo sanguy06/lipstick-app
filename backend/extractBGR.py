@@ -56,8 +56,6 @@ def colorSegmentation(img_cv2):
     print("Average BGR: ", avg_bgr)
     return avg_bgr
 
-# Run 
-colorSegmentation()
 
 
 

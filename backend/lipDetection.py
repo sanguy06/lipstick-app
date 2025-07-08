@@ -4,6 +4,7 @@ import numpy as np
 from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from typing import Tuple, Union
+import base64
 import math
 
 # Lip Edges Landmarks
@@ -23,8 +24,12 @@ image_path = 'testImages/face2.jpg'
 image = mp.Image.create_from_file(image_path)
 drawing_spec = mp_drawing.DrawingSpec(thickness=1, circle_radius=1)
 
+
+
 def applyLipstick(bgr_vals, img_cv2): 
-  color = tuple(bgr_vals)
+  
+  color = tuple(int(c) for c in bgr_vals)
+  print("Color values in tuple ", color)
   with mp_face_mesh.FaceMesh(
       static_image_mode=True,
       max_num_faces=1,
@@ -46,9 +51,15 @@ def applyLipstick(bgr_vals, img_cv2):
           inner = inner.reshape((-1, 1, 2))
           overlay = image.copy()
           cv2.fillPoly(overlay, [outer], color=color)  # BGR format     
-          alpha = 0.6
+          alpha = 0.2
           image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
 
   # Display Image
-  cv2.imshow("Lips", image)
+  resized_img = cv2.resize(image, (300,600))
+  cv2.imshow("Lips", resized_img)
+
   cv2.waitKey(0)
+
+
+ 
+  return resized_img
