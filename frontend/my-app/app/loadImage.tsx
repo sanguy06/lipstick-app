@@ -1,4 +1,4 @@
-import { View, Text, Image} from "react-native"
+import { View, Text, Image, StyleSheet, ActivityIndicator} from "react-native"
 import { useState, useEffect } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import https from "node:https"
@@ -13,7 +13,8 @@ export default function LoadImage() {
     // Img URI can be string or array -> make it a single string 
     const userImgUri = getSingleParam(user_img)
     const prodImgUri = getSingleParam(product_img)
-    const [image, setImage] = useState("")
+    const[ogImage, setOgImage] = useState("")
+    const [finalImage, setFinalImage] = useState("")
     // Get Image Type -> will be sent as mimetype in GET URL request
     const user_img_type = userImgUri?.split('.').pop()?.toLowerCase()
     const product_img_type = prodImgUri?.split('.').pop()?.toLowerCase()
@@ -43,9 +44,10 @@ export default function LoadImage() {
         })         
         .then((res)=>{
             userPresigned = res.data
+            
             console.log("User Presigned: " + userPresigned)
         })
-
+       
         // Get Presigned URL for Product Image
          await axios.get(`${host}/users/create-put-url`, {
             headers:{
@@ -125,20 +127,35 @@ export default function LoadImage() {
             })
             const res = await fetch(presignedURL)
             console.log("Finished image url: ", res.url)
-            setImage(res.url)
+            setFinalImage(res.url)
         } catch(err){
             console.log(err)
-        }
-        
+        }     
     }
    
     return(
-        <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
-            {image && (
+        <View style={styles.container}>
+
+            {finalImage? (          
                 <Image 
-                    source={{uri: image}}
-                    style={{resizeMode: 'contain', width: "70%", height: "80%"}}/>
+                    source={{uri: finalImage}}
+                    style={{borderRadius: 20, width: "100%", height: "80%"}}
+                />        
+            ): (
+                <ActivityIndicator size='large' color='white'/>
             )}
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1, 
+        justifyContent: 'center',
+        alignItems:'center', 
+        backgroundColor: 'pink'
+    }
+
+    
+})
+

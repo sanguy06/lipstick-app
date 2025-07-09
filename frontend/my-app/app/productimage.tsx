@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity} from "react-native"
+import { Text, View, StyleSheet, TouchableOpacity, Alert} from "react-native"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import * as ImagePicker from 'expo-image-picker'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
@@ -25,6 +25,7 @@ export default function ProductImage() {
         }
         
     }
+    
     return(
         <View style={styles.container}>
             <Text style={styles.text_container}>
@@ -38,14 +39,21 @@ export default function ProductImage() {
                 <Ionicons 
                     name="arrow-forward-outline" 
                     size={44} 
-                    onPress={()=>{router.push({pathname: '/takePhoto', params:{productImage: productImage}})}}
+                    onPress={()=> productImage ? (
+                        router.push({
+                        pathname: '/takePhoto',
+                        params: { productImage },
+                        }))
+                    :
+                       ( Alert.alert('Please select an image first'))
+                    
+                    }
                 >
                 </Ionicons>
             </TouchableOpacity>
         </View>
         
     )
-
 
 }
 
@@ -72,12 +80,12 @@ export default function ProductImage() {
             borderWidth: 5
         },
         button_container: {
-        position:'absolute',
-        flexDirection: 'row',
-        backgroundColor: 'transparent',
-        width: '100%', 
-        bottom: 30,
-        paddingHorizontal: 20,
-        justifyContent: 'center'
+            position:'absolute',
+            flexDirection: 'row',
+            backgroundColor: 'transparent',
+            width: '100%', 
+            bottom: 30,
+            paddingHorizontal: 20,
+            justifyContent: 'center'
         }
     })
