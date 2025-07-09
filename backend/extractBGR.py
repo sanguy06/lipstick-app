@@ -19,9 +19,9 @@ import numpy as np
 def colorSegmentation(img_cv2): 
     # Using CV2 Img Conv BGR -> HSV
     img_hsv = cv2.cvtColor(img_cv2, cv2.COLOR_BGR2HSV)
-    plt.figure()
-    plt.imshow(img_cv2)
-    plt.show()
+    #plt.figure()
+    #plt.imshow(img_cv2)
+    #plt.show()
     lowerBound1 = np.array([0, 80, 70])
     upperBound1 = np.array([10,255,255])
     lowerBound2 = np.array([150, 80, 70])
@@ -30,8 +30,8 @@ def colorSegmentation(img_cv2):
     mask2 = cv2.inRange(img_hsv, lowerBound2, upperBound2)
     mask = cv2.bitwise_or(mask1,mask2)
 
-    cv2.imshow('mask', mask)
-    cv2.waitKey(0)
+   # cv2.imshow('mask', mask)
+   # cv2.waitKey(0)
     
     # Finding Contours 
     contours,_  = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -42,8 +42,8 @@ def colorSegmentation(img_cv2):
       
     # keeps parts of the og image where the mask(binary image) is white
     masked_bgr = cv2.bitwise_and(img_cv2, img_cv2, mask=mask)
-    cv2.imshow('masked_bgr', masked_bgr)
-    cv2.waitKey(0)
+    #cv2.imshow('masked_bgr', masked_bgr)
+    #cv2.waitKey(0)
     
     # Get pixels in BGR where the mask is white
     pixels = img_cv2[mask == 255]

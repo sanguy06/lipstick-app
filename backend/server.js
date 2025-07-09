@@ -160,14 +160,6 @@ app.get('/users/create-get-url', authenticateToken, async(req,res) => {
     res.send(signedUrl)
 })
 
-// Get Most Recent Image from User to DB
-app.get('/users/get-image', authenticateToken, async(req,res)=>{
-    const user_id = req.user.user_id
-    const image_id = await pool.query(`SELECT * FROM images WHERE 
-        user_id = $1 ORDER BY uploaded_at DESC LIMIT 1`, [user_id]); 
-    res.send(image_id[0])
-})
-
 // Add Image to DB
 app.post('/users/add-image', authenticateToken, async (req,res) => {
     const user_id = req.user.user_id
@@ -182,15 +174,17 @@ app.post('/users/add-image', authenticateToken, async (req,res) => {
 app.post('/users/add-processed-image', authenticateToken, async (req,res) => {
     const user_id = req.user.user_id
     const {image_id} = req.body
+    console.log("At express ", image_id)
     const s3_key = `${user_id}/photos/${image_id}`
     await pool.query(`INSERT INTO images (user_id, image_id, s3_key) VALUES ($1, $2, $3)`, 
         [user_id, image_id, s3_key]
     )
+    
     res.json({user_id, image_id, s3_key})
 })
 
 // Delete Image from DB
-app.delete('users/delete-image', authenticateToken, async(req,res)=>[
+app.delete('/users/delete-image', authenticateToken, async(req,res)=>[
 
 ])
 
@@ -203,23 +197,34 @@ app.post('/users/load-image', authenticateToken, async(req,res)=>{
     const pythonPath = process.env.PYTHON_PATH;
 
     try {
-        
+        // Run Python Script to Apply Filter
         const pythonProcess = spawn(pythonPath, ['applyFilter.py', 
             user_id, user_img, product_img, accessToken])
         pythonProcess.stderr.on('data', (data) => {
             console.error(`stderr: ${data}`);
         });
         pythonProcess.stdout.on('data', (data)=> {
-            console.error(`stderr: ${data}`);
             console.log(`stdout: ${data}`);
         })
-       
+        pythonProcess.on('close', async (code) => {
+            console.log(`Python script exited with code ${code}`);
+
+        if (code !== 0) {
+            return res.status(500).json({ error: 'Processing failed' });
+        }     
+        // Get Most Recent Image 
+        const image_id = await pool.query(`SELECT * FROM images WHERE 
+        user_id = $1 ORDER BY uploaded_at DESC LIMIT 1`, [user_id]); 
+
+        // Respond with Image ID
+        res.send(image_id.rows[0].image_id)
+
+        })
     } catch (err) {
         console.log(err)
     }
-    res.send("yo")
+   
 })
-
 
 
 app.post('/test', async(req,res)=>

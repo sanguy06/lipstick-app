@@ -56,9 +56,9 @@ def applyLipstick(bgr_vals, img_cv2):
 
   # Display Image
   resized_img = cv2.resize(image, (300,600))
-  cv2.imshow("Lips", resized_img)
+  #cv2.imshow("Lips", resized_img)
 
-  cv2.waitKey(0)
+  #cv2.waitKey(0)
 
 
  

@@ -12,6 +12,7 @@ import os
 import uuid
 from extractBGR import colorSegmentation
 from lipDetection import applyLipstick
+
 load_dotenv()
 host = os.getenv("HOST")
 
@@ -22,7 +23,7 @@ product_img = sys.argv[3]
 access_token = sys.argv[4]
 bgr_vals = []
 #finished_img = None
-img_mimetype = ""
+img_mimetype = ".jpg"
 
 def openUserImage(bgr_vals): 
     try:     
@@ -71,8 +72,9 @@ def openProdImage():
 
 # Send image to S3 and Frontend
 def sendImage(finished_img):
-    image_id = uuid.uuid4()
+    image_id = str(uuid.uuid4())
     try:   
+
         # Convert CV2 Img (NP Array) --> Byte Data  
         success, encoded_img  = cv2.imencode('.jpg', finished_img)
         if not success:
@@ -83,19 +85,21 @@ def sendImage(finished_img):
         presignedURL = requests.get(f"{host}/users/upload-processed-image", 
             params = {"image_id" : image_id, "mimetype": img_mimetype }, 
             headers = {"Authorization": f"{access_token}"}
-        )        
+        ) 
 
         # Upload to S3 
-        requests.put(presignedURL, 
+        requests.put(presignedURL.text, 
             data=img_bytes, 
             headers={'Content-Type': f"image/{img_mimetype}"}
         )
-
+        print("image id at applyfilter ",  image_id)
         # Add Image ID to Postgres DB
-        requests.put(f"{host}/users/add-processed-image", 
-                     params = {"image_id": image_id}, 
+        response = requests.post(f"{host}/users/add-processed-image", 
+                     json = {"image_id": image_id}, 
                      headers = {"Authorization": f"{access_token}"}
                      )
+        print("Adding image to database", response.status_code)
+        print(response.text)
     except exception as e:     
         print(f"Error: {e}")    
 

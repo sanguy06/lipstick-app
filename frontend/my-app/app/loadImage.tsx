@@ -1,4 +1,4 @@
-import { View, Text} from "react-native"
+import { View, Text, Image} from "react-native"
 import { useState, useEffect } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import https from "node:https"
@@ -13,7 +13,7 @@ export default function LoadImage() {
     // Img URI can be string or array -> make it a single string 
     const userImgUri = getSingleParam(user_img)
     const prodImgUri = getSingleParam(product_img)
-
+    const [image, setImage] = useState("")
     // Get Image Type -> will be sent as mimetype in GET URL request
     const user_img_type = userImgUri?.split('.').pop()?.toLowerCase()
     const product_img_type = prodImgUri?.split('.').pop()?.toLowerCase()
@@ -99,6 +99,8 @@ export default function LoadImage() {
             console.log(err)
         }
         try {
+            let image_id = ""
+            let presignedURL = ""
             await axios.post(`${host}/users/load-image`, {
                 user_img: userImgUri, 
                 product_img: prodImgUri
@@ -107,20 +109,10 @@ export default function LoadImage() {
                     Authorization: `Bearer ${accessToken}`
                 },    
             })
-        } catch(err){
-            console.log(err)
-        }
-        try {
-            /**
-             * Needs to get most recent image id from postgres
-             * Request presigned URL from backend with the image id
-             * use presigned URL
-             */
-            let presignedURL = ""
-            const image_id = await axios.get(`${host}/users/get-image`,  {
-            headers:{
-                Authorization: `Bearer ${accessToken}`
-            }})
+            .then((res) =>{
+                image_id = res.data
+                console.log(image_id)
+            })
             await axios.get(`${host}/users/get-processed-image`, {
                 headers:{
                     Authorization: `Bearer ${accessToken}`
@@ -132,16 +124,21 @@ export default function LoadImage() {
                 console.log(presignedURL)
             })
             const res = await fetch(presignedURL)
-            console.log(res)
-
-        } catch (err) {
+            console.log("Finished image url: ", res.url)
+            setImage(res.url)
+        } catch(err){
             console.log(err)
         }
+        
     }
    
     return(
-        <View>
-            <Text>Loading Image</Text>
+        <View style={{flex: 1, justifyContent: 'center', alignItems:'center'}}>
+            {image && (
+                <Image 
+                    source={{uri: image}}
+                    style={{resizeMode: 'contain', width: "70%", height: "80%"}}/>
+            )}
         </View>
     )
 }
