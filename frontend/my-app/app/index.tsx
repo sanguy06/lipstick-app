@@ -1,21 +1,25 @@
-import { Text, View, StyleSheet, Button, LogBox} from "react-native";
+import { Text, View, StyleSheet, Button, LogBox, TouchableOpacity} from "react-native";
 import {useRouter} from 'expo-router';
 
-  
-// Acts As Welcome Screen
-export default function Index() {
   LogBox.ignoreLogs([
    /shadow.*/i,
   /pointerEvents/i,
 ]);
+// Acts As Welcome Screen
+export default function Index() {
   const router = useRouter()
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Welcome</Text>
-      <Text style={styles.text}>to</Text>
-      <Text style={styles.text}>Lipify!</Text>
-      <Button title = "Login" onPress={()=> router.navigate('/login')}></Button>
-      <Button title="Signup" onPress={()=> router.navigate('/signup')}></Button>
+      
+      <View style={{paddingTop: 150}}> 
+        <TouchableOpacity style = {styles.button} onPress={()=> router.navigate('/login')}>
+          <Text style={{fontFamily: "CuteDino", fontSize: 30, color: '#2E2E2E'}}>Get Started</Text>
+        </TouchableOpacity>
+        
+      </View>
+      
+    
     </View>
   );
 }
@@ -24,14 +28,23 @@ export default function Index() {
 const styles = StyleSheet.create({
   container: {
     flex: 1, 
-    backgroundColor: 'white', 
+    backgroundColor: '#fab6c7', 
     alignItems: 'center',
-    paddingTop: 100
- 
+    justifyContent:'center'
+    
   }, 
   text: {
-    color: 'pink',
+    color: '#2E2E2E',
     fontFamily:'CuteDino', 
     fontSize: 50
+  }, 
+  button: {
+    backgroundColor: '#B76E79', 
+    borderRadius: 10, 
+    borderWidth: 2, 
+    paddingVertical: 10,
+    paddingHorizontal: 50, 
+    borderColor: '#B76E79', 
+    justifyContent: 'center'
   }
 })

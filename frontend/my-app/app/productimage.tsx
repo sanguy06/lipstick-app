@@ -1,4 +1,4 @@
-import { Text, View, StyleSheet, TouchableOpacity, Alert} from "react-native"
+import { Text, View, StyleSheet, TouchableOpacity, Alert, Image} from "react-native"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import * as ImagePicker from 'expo-image-picker'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
@@ -29,11 +29,14 @@ export default function ProductImage() {
     return(
         <View style={styles.container}>
             <Text style={styles.text_container}>
-                <Text>Upload image</Text>
-                <Text> here!</Text>
+                <Text>Upload image of your lipstick here</Text>
             </Text>
-            <TouchableOpacity style={styles.box_container} onPress={pickImage}>      
-                <Ionicons name="cloud-upload-outline" size={44}></Ionicons>
+            <TouchableOpacity style={styles.box_container} onPress={pickImage}>     
+                { !productImage ? 
+                (<View style={{paddingTop: 100}}><Ionicons name="cloud-upload-outline" size={70}></Ionicons></View>)
+                :
+                (<Image source={{uri: productImage}} style = {{width: '100%', height: '100%'}}/>)
+                }
             </TouchableOpacity>    
             <TouchableOpacity style={styles.button_container}>
                 <Ionicons 
@@ -45,8 +48,7 @@ export default function ProductImage() {
                         params: { productImage },
                         }))
                     :
-                       ( Alert.alert('Please select an image first'))
-                    
+                       ( Alert.alert('Please select an image first') )                    
                     }
                 >
                 </Ionicons>
@@ -62,22 +64,27 @@ export default function ProductImage() {
             flex: 1, 
             flexDirection: "column", 
             alignItems: "center",
-            position: "relative"
+            position: "relative", 
+            backgroundColor: '#fab6c7', 
+           
         }, 
         text_container: {
             paddingTop: 100,
             fontFamily: "CuteDino", 
-            fontSize: 40
+            fontSize: 30, 
+            color: '#2E2E2E', 
+            paddingBottom: 20, 
+            textAlign:'center'
+            
         }, 
-        box_container: {
-           
+        box_container: { 
             alignItems: 'center',
-            paddingTop: 100,
             borderRadius: 10, 
             width: "70%", 
             height: "40%", 
-            borderColor: 'gray', 
-            borderWidth: 5
+            borderColor: '#2E2E2E', 
+            borderWidth: 5, 
+            backgroundColor: 'white'
         },
         button_container: {
             position:'absolute',

@@ -59,7 +59,8 @@ app.post('/users/login', async(req,res)=> {
         [user_name])
 
     // If Match Found -> Authenticate User and Generate Token 
-    if (userMatch.length == 0) {
+    
+    if (userMatch.rows.length == 0) {
         res.send("No match")
     } 
     else {
