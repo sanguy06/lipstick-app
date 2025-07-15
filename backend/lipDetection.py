@@ -55,11 +55,12 @@ def applyLipstick(bgr_vals, img_cv2):
           image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
 
   # Display Image
-  resized_img = cv2.resize(image, (300,600))
+  #resized_img = cv2.resize(image, (300,600))
   #cv2.imshow("Lips", resized_img)
 
   #cv2.waitKey(0)
 
 
  
-  return resized_img
+  #return resized_img
+  return image

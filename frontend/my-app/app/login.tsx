@@ -22,12 +22,18 @@ export default function Login() {
             passcode: password
             })
         .then( async (res)=> {
-            if(res.data !== "Not allowed")
+            console.log("data is", res.data)
+            if(res.data === "No Match" || res.data === "Not Allowed")
             {
-                await AsyncStorage.setItem('accessToken', res.data.accessToken);
-                router.navigate('/demo')
-            } else {
+                console.log(text)
                 setText(false)        
+            }
+                
+             else {
+                console.log(text)
+                await AsyncStorage.setItem('accessToken', res.data.accessToken);
+                router.navigate('/demo')   
+                      
             }
         })  
 

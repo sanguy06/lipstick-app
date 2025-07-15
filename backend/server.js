@@ -61,7 +61,8 @@ app.post('/users/login', async(req,res)=> {
     // If Match Found -> Authenticate User and Generate Token 
     
     if (userMatch.rows.length == 0) {
-        res.send("No match")
+        res.send("No Match")
+        console.log("No Match")
     } 
     else {
         if(await bcrypt.compare(passcode, userMatch.rows[0].passcode)){
@@ -71,12 +72,12 @@ app.post('/users/login', async(req,res)=> {
             const user_id = match.rows[0].user_id
             const user = {user_name, user_id, passcode}
             const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET)
-            console.log("Match found")
+            console.log("Match Found")
             res.json({user, accessToken})
         }
         else {
-            res.send("Not allowed")
-            console.log("Not allowed")
+            res.send("Not Allowed")
+            console.log("Not Allowed")
         }
 
     }
@@ -202,12 +203,10 @@ app.post('/users/load-image', authenticateToken, async(req,res)=>{
         const pythonProcess = spawn(pythonPath, ['applyFilter.py', 
             user_id, user_img, product_img, accessToken])
         pythonProcess.stderr.on('data', (data) => {
-            console.error(`stderr: ${data}`);
+            console.error(`stderr: ${data.toString()}`);
         });
-        pythonProcess.stdout.on('data', (data)=> {
-            console.log(`stdout: ${data}`);
-        })
         pythonProcess.on('close', async (code) => {
+
             console.log(`Python script exited with code ${code}`);
 
         if (code !== 0) {

@@ -25,6 +25,11 @@ bgr_vals = []
 #finished_img = None
 img_mimetype = ".jpg"
 
+def resize_with_aspect(image, max_dim=512):
+    h, w = image.shape[:2]
+    scale = max_dim / max(h, w)
+    return cv2.resize(image, (int(w*scale), int(h*scale)))
+
 def openUserImage(bgr_vals): 
     try:     
         presignedURL = requests.get(f"{host}/users/create-get-url", 
@@ -41,6 +46,8 @@ def openUserImage(bgr_vals):
 
         # decode with cv2 now usable by cv2 library
         img_cv2 = cv2.imdecode(img_bytes, cv2.IMREAD_COLOR)   
+        img_cv2 = resize_with_aspect(img_cv2)
+
         # CV2 Img is in NP array format --> needs to be converted as a uri to send back to s3
         finished_img = applyLipstick(bgr_vals, img_cv2)
         sendImage(finished_img)
@@ -104,10 +111,7 @@ def sendImage(finished_img):
         print(f"Error: {e}")    
 
 
-# Open Images
-#print("reached file")
 openProdImage()
-#openUserImage()
 
 
 

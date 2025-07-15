@@ -6,25 +6,33 @@ export default function Demo() {
     return(
         <View style={styles.container}>
             <View style={styles.wrapper}>
-                <Text style={styles.text}>For best results 
-                    please upload image of lipstick 
-                    with a solid white background like shown below</Text>
-
-                <Image 
-                    style={styles.image}
-                    source={require('../assets/images/lipstick2.webp')}>
-                </Image>           
-                  <TouchableOpacity style={styles.button}>
-                    <Ionicons 
-                        name="arrow-forward-outline" 
-                        size={50} 
-                        onPress={()=> 
-                            router.push('/productimage')}
-                    >
-                </Ionicons>
-            </TouchableOpacity>               
-            </View>        
-            
+                <Text style={styles.text}>
+                    Please upload an image of the desired lipstick with a solid background
+                </Text>
+                <View style={styles.image_wrapper}>
+                    <Image 
+                        style={styles.image}
+                        source={require('../assets/images/lipstick2.webp')}>
+                    </Image>  
+                    <View style={styles.next_button}>
+                        <TouchableOpacity >
+                            <Text style={{
+                                fontFamily:"Cute Dino", 
+                                color: '#2E2E2E'}}
+                            >
+                                Next
+                            </Text>
+                            <Ionicons 
+                                name='arrow-forward-outline' 
+                                title ='Save' 
+                                size={44} 
+                                color='#B76E79'
+                                onPress={()=>{router.push({
+                                pathname: '/productimage'})}}/>
+                        </TouchableOpacity>          
+                    </View>                  
+                </View>                                 
+            </View>               
         </View>
     )
 }
@@ -41,7 +49,6 @@ const styles = StyleSheet.create({
         flex: 1,
         textAlign: 'center', 
         width: '80%', 
-        alignItems: 'center', 
         alignContent: 'center', 
         height: '100%', 
         position: 'absolute'
@@ -50,20 +57,38 @@ const styles = StyleSheet.create({
         paddingTop: 50,
         fontFamily:'CuteDino', 
         fontSize: 20, 
-        paddingBottom: 50, 
+        paddingBottom: 20, 
         color: '#2E2E2E', 
         lineHeight: 30
         
     }, 
+    text_container: {
+        flex: 1, 
+        alignContent: 'center', 
+        alignItems: 'center',
+        width: '30%', 
+        height: '30%', 
+    },
+    image_wrapper: {
+        flex: 1, 
+        flexDirection: 'column', 
+        alignItems: 'center', 
+        justifyContent: 'space-around'
+    }, 
     image: {     
-        width: '100%', 
+        width: '80%', 
         height: '50%', 
-        borderRadius: 10
+        borderRadius: 10, 
     },
     button: {
         paddingTop: 50,
-        color: 'black',
-        
-       
+        color: 'black',  
+    }, 
+    next_button: {
+        marginRight: 10, 
+        alignSelf:'flex-end'
     }
+   
+    
+    
 })

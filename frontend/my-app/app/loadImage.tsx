@@ -1,20 +1,22 @@
-import { View, Text, Image, StyleSheet, ActivityIndicator} from "react-native"
+import { View, Text, Image, StyleSheet, ActivityIndicator, Pressable, Modal, TouchableOpacity } from "react-native"
 import { useState, useEffect } from "react"
 import { useRouter, useLocalSearchParams } from "expo-router"
 import https from "node:https"
 import AsyncStorage from "@react-native-async-storage/async-storage"
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import config from './config'
 import axios from "axios"
 export default function LoadImage() {
 
     const host = config.HOST
     const {user_img, product_img} = useLocalSearchParams()
-
+    const router = useRouter()
     // Img URI can be string or array -> make it a single string 
     const userImgUri = getSingleParam(user_img)
     const prodImgUri = getSingleParam(product_img)
     const[ogImage, setOgImage] = useState("")
     const [finalImage, setFinalImage] = useState("")
+    const [modalVisible, setModalVisible] = useState(false)
     // Get Image Type -> will be sent as mimetype in GET URL request
     const user_img_type = userImgUri?.split('.').pop()?.toLowerCase()
     const product_img_type = prodImgUri?.split('.').pop()?.toLowerCase()
@@ -135,12 +137,49 @@ export default function LoadImage() {
    
     return(
         <View style={styles.container}>
-
-            {finalImage? (          
-                <Image 
-                    source={{uri: finalImage}}
-                    style={{borderRadius: 20, width: "100%", height: "80%"}}
-                />        
+            {finalImage? (   
+                <View>         
+                    <Text style={styles.text}>Results are in... 
+                        <Pressable onPress={()=>setModalVisible(true)} hitSlop={10}>
+                            <Text style={{ 
+                                fontFamily: "CuteDino", 
+                                color: 'blue', 
+                                textDecorationLine: 'underline' }}>
+                                Click here to view
+                            </Text>
+                        </Pressable>    
+                    </Text> 
+                    
+                    <Modal
+                        visible={modalVisible}
+                        transparent={true}
+                        animationType="fade"
+                        onRequestClose={() => setModalVisible(false)}>
+                        <View style={styles.image}>
+                        <Image
+                            source={{uri: finalImage}}
+                            style={{borderRadius: 20, width: "80%", height: "70%"}}
+                            resizeMode="contain"
+                        />  
+                        <TouchableOpacity
+                            onPress={()=>setModalVisible(false)}
+                        >
+                            <MaterialCommunityIcons
+                             name="close"
+                                size={30}
+                                color="black">
+                            </MaterialCommunityIcons>
+                        </TouchableOpacity>  
+                        <TouchableOpacity></TouchableOpacity>  
+                        </View>
+                    </Modal>
+                    <TouchableOpacity 
+                        style={styles.button} 
+                        onPress={()=> router.navigate('/productimage')}
+                    >
+                        <Text style={{fontFamily: "CuteDino", fontSize: 30, color: '#2E2E2E'}}>Try more</Text>
+                    </TouchableOpacity>
+                </View> 
             ): (
                 <ActivityIndicator size='large' color='white'/>
             )}
@@ -154,6 +193,32 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems:'center', 
         backgroundColor: 'pink'
+    },
+    close_button: {
+
+    }, 
+    text: {
+        fontFamily:'CuteDino', 
+        fontSize: 20, 
+        paddingBottom: 50, 
+        color: '#2E2E2E', 
+        lineHeight: 30
+    }, 
+    image: {
+        flex: 1, 
+        justifyContent: 'center',
+        alignItems:'center', 
+        alignContent: 'center'
+    }, 
+    button: {
+        backgroundColor: '#B76E79', 
+        borderRadius: 10, 
+        borderWidth: 2, 
+        paddingVertical: 10,
+        paddingHorizontal: 50, 
+        borderColor: '#B76E79', 
+        justifyContent: 'center', 
+        alignItems: 'center'
     }
 
     
