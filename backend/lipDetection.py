@@ -51,7 +51,7 @@ def applyLipstick(bgr_vals, img_cv2):
           inner = inner.reshape((-1, 1, 2))
           overlay = image.copy()
           cv2.fillPoly(overlay, [outer], color=color)  # BGR format     
-          alpha = 0.2
+          alpha = 0.3
           image = cv2.addWeighted(overlay, alpha, image, 1 - alpha, 0)
 
   # Display Image

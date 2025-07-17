@@ -2,14 +2,21 @@
 
 This app allows users to upload images of lipstick products and photos of themselves to virtually try on a lipstick shade. It has the following functions: 
 
-    * User account system with JWT Authentication
-    * Import from Phone's Media Library to upload lipstick images
-    * Import photo of user from media library/ Take Photo with Camera Feature 
-    * Displays image of user with lipstick shade on
+* User account system with JWT Authentication
+* Import from Phone's Media Library to upload lipstick images
+* Import photo of user from media library/ Take Photo with Camera Feature 
+* Displays image of user with lipstick shade on
 
 # Example
 
-    *TBC
+<p align="center">
+    <img src="assets/example1.jpeg" alt="Image 1" width="100" />
+    <span style="font-size: 40px; margin: 0 20px;">➡️</span>
+    <img src="assets/lipstick.png" alt="Image 2" width="100" />
+    <span style="font-size: 40px; margin: 0 20px;">➡️</span>
+    <img src="assets/example2.jpeg" alt="Image 3" width="100" />
+
+</p>
 
 # Data Flow
 
