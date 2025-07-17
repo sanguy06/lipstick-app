@@ -10,11 +10,11 @@ This app allows users to upload images of lipstick products and photos of themse
 # Example
 
 <p align="center">
-    <img src="assets/example1.jpeg" alt="Image 1" width="100" />
+    <img src="assets/example1.jpeg" alt="Image 1" width="200" />
     <span style="font-size: 40px; margin: 0 20px;">➡️</span>
-    <img src="assets/lipstick.png" alt="Image 2" width="100" />
+    <img src="assets/lipstick.png" alt="Image 2" width="200" />
     <span style="font-size: 40px; margin: 0 20px;">➡️</span>
-    <img src="assets/example2.jpeg" alt="Image 3" width="100" />
+    <img src="assets/example2.jpeg" alt="Image 3" width="200" />
 
 </p>
 
