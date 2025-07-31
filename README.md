@@ -20,9 +20,9 @@ This app allows users to upload images of lipstick products and photos of themse
 
 # Data Flow
 
+Frontend (RN) -> S3 with Images from User -> Backend(Express) -> S3 with Image with Applied Lipstick Filter -> Frontend (RN)
 
-User uploads images of product and picture of themselves to frontend (React Native). React Native sends image URIs to AWS S3. RN sends the URI which is a part of the S3 key to the backend (Express App) server. The server runs a Python Script - applyFilter.py - that makes a request to generate a GET Pre-Signed URL to get access to S3 bucket. Within the Python Script, the image gets converted to -> byte data then to -> numpy array which the OpenCV library can now work on. OpenCV extracts RGB values from the lipstick image using HSV Color Masking to isolate the region that falls within a set range of typical lipstick colors such as reds/pinks. MediaPipe FaceMesh uses facial landmarks to isolate lip region and apply the color onto the lips and uploads it to S3. Backend adds the S3 key of the finished image to PostgreSQL database related to the user. Frontend then gets the most recently added image's S3 Key. Using this key, Frontend makes a request to backend to generate a GET Pre-Signed URL to get the finished image from the S3 database to display to the user. 
-
+User uploads images of product and picture of themselves to frontend (React Native/RN). RN sends image URIs to AWS S3. Backend runs a Python Script - applyFilter.py - that makes a request to get access to S3 bucket to grab image URLs. Within the Python Script, the image gets converted to byte data then to numpy array for OpenCV to use. App uses HSV Color Masking to isolate the region, containing red/pink colors. OpenCV library is used to extract the BGR->RGB values. MediaPipe FaceMesh uses facial landmarks to isolate lip region and apply the color onto the lips. Final image gets uploaded to S3. Backend adds the S3 key of the finished image to PostgreSQL database related to the user id. Frontend then gets the most recently added image's S3 Key. Using this key, Frontend makes a request to backend to generate a GET Pre-Signed URL to get the finished image from the S3 database to display to the user. 
 
 # Known Issues 
 
